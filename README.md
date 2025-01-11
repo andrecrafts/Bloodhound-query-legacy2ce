@@ -132,7 +132,7 @@ You can also support me on buy me a ko-fi to fuel more awesome content:
 ## Credits
 
 - [Make Bloodhound Cool Again: Migrating Custom Queries from Legacy BloodHound to BloodHound CE](https://medium.com/seercurity-spotlight/make-bloodhound-cool-again-migrating-custom-queries-from-legacy-bloodhound-to-bloodhound-ce-83cffcfe5b64)
-    - After reading Kenneth Nevers' Blog, I decided to full automate this with Python.
+    - His bash scripts helped me getting started!
 
 Tool developed with ❤️ by **WafflesExploits**.
 
