@@ -1,6 +1,6 @@
 ## BloodHound Query Legacy to CE Tool
 
-### Convert and Upload Custom Queries from Legacy BloodHound to CE
+### Convert and Upload Custom Queries from BloodHound Legacy to BloodHound CE
 
 This tool simplifies the process of migrating/converting your Cypher queries from **Legacy BloodHound** to **BloodHound CE (Community Edition)**. It automatically reformats legacy custom queries into the new BloodHound CE format and uploads them directly through the BloodHound CE API.
 
