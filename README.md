@@ -5,7 +5,7 @@
 This tool simplifies the process of migrating/converting your Cypher queries from **Legacy BloodHound** to **BloodHound CE (Community Edition)**. It automatically reformats legacy custom queries into the new BloodHound CE format and uploads them directly through the BloodHound CE API.
 
 ### Key Features
-- Convert Legacy BloodHound queries to the BloodHound CE JSON format.
+- Convert BloodHound Legacy queries to the BloodHound CE JSON format.
 - Automatically upload reformatted queries to BloodHound CE via API.
 - Support for rate-limited uploading to prevent API blocking.
 - Detailed error handling and progress reporting during query uploads.
