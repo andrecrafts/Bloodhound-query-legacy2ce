@@ -78,9 +78,9 @@ To upload queries via the API, you'll need the **JWT token** from BloodHound CE.
 
 1.  Open BloodHound CE and navigate to the **API Explorer**.
 2.  Find the **Get Self** API request, click **Try It Out**, then **Execute**.
-    - <img src=":/837f0e93cbe141319eaa353be1402439" alt="8c116f87c7c38fee18bfa7669901f475.png" width="450" height="105" class="jop-noMdConv">
+    - <img src="https://github.com/user-attachments/assets/b429256d-2b14-404c-a405-39f80b9655f7" alt="8c116f87c7c38fee18bfa7669901f475.png" width="450" height="105" class="jop-noMdConv">
 3.  Once the response loads, grab the **JWT Token** located in the `Authorization: Bearer` header.
-    - <img src=":/2bfcbbf271ab47afb56f822645654d7b" alt="e562b5a4f701cbac39d2a1c306da1ac7.png" width="429" height="154" class="jop-noMdConv">
+    - <img src="https://github.com/user-attachments/assets/3bc6cf1c-6567-4052-8390-c0d964bd4672" alt="e562b5a4f701cbac39d2a1c306da1ac7.png" width="429" height="154" class="jop-noMdConv">
 
 ## Old vs New Query Format
 
