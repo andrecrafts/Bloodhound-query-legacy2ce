@@ -19,7 +19,7 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 1.  [Usage](#usage)
 2.  [Getting the JWT Token from BloodHound CE](#getting-the-jwt-token-from-bloodhound-ce)
 3.  [Old vs New Query Format](#old-vs-new-query-format)
-4.  [Support & Contribution](#support-&-contribution)
+4.  [Support & Contribution](#support--contribution)
 5.  [Credits](#credits)
 6.  [License](#license)
 
