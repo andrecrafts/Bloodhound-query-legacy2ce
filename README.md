@@ -5,7 +5,6 @@
 This tool simplifies the process of migrating/converting your Cypher queries from **Legacy BloodHound** to **BloodHound CE (Community Edition)**. It automatically reformats legacy custom queries into the new BloodHound CE format and uploads them directly through the BloodHound CE API.
 
 ### Key Features
-
 - Convert Legacy BloodHound queries to the BloodHound CE JSON format.
 - Automatically upload reformatted queries to BloodHound CE via API.
 - Support for rate-limited uploading to prevent API blocking.
@@ -78,9 +77,9 @@ To upload queries via the API, you'll need the **JWT token** from BloodHound CE.
 
 1.  Open BloodHound CE and navigate to the **API Explorer**.
 2.  Find the **Get Self** API request, click **Try It Out**, then **Execute**.
-    - <img src="https://github.com/user-attachments/assets/b429256d-2b14-404c-a405-39f80b9655f7" alt="8c116f87c7c38fee18bfa7669901f475.png" width="450" height="105" class="jop-noMdConv">
+    - <img src="https://github.com/user-attachments/assets/b429256d-2b14-404c-a405-39f80b9655f7" alt="8c116f87c7c38fee18bfa7669901f475.png" width="655" height="153">
 3.  Once the response loads, grab the **JWT Token** located in the `Authorization: Bearer` header.
-    - <img src="https://github.com/user-attachments/assets/3bc6cf1c-6567-4052-8390-c0d964bd4672" alt="e562b5a4f701cbac39d2a1c306da1ac7.png" width="429" height="154" class="jop-noMdConv">
+    - <img src="https://github.com/user-attachments/assets/3bc6cf1c-6567-4052-8390-c0d964bd4672" alt="e562b5a4f701cbac39d2a1c306da1ac7.png" width="641" height="230">
 
 ## Old vs New Query Format
 
