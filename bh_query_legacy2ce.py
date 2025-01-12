@@ -50,7 +50,7 @@ def parse_arguments():
     parser.add_argument(
         "--upload-only",
         action="store_true",
-        help="If specified, the script uploads pre-converted queries without performing conversion."
+        help="If specified, the script uploads already converted queries without performing conversion."
     )
     parser.add_argument(
         "--output-file",
