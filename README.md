@@ -19,6 +19,7 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 - Missing `category` is set to `null` automatically instead of causing an error.
 - Missing query `name` is assigned a unique name in the format: `Unnamed query <uuid>`.
 - Queries with missing or empty query values are skipped with a message indicating why.
+- Fetches variables in `props` field, and replaces them in the query to be compatible with BloodHound CE.
 
 ### Table of Contents
 
