@@ -13,11 +13,12 @@ cyan = "\033[36m"
 yellow = "\033[33m"
 reset = "\033[0m"  # Reset color
 
+
 # Constants
 MAX_REQUESTS_PER_SECOND = 55  # Rate limit: maximum requests allowed per second - Bloodhound blocks your requests if you exceed this.
 DELAY_BETWEEN_REQUESTS = 1 / MAX_REQUESTS_PER_SECOND  # Delay between requests in seconds
-
-
+skipped_queries_filename = "skipped_queries_list.txt"
+skipped_queries_exists = False
 def parse_arguments():
     """
     Parse command-line arguments for the script.
@@ -117,11 +118,19 @@ def convert_legacy_queries(legacy_queries):
     """
     try:
         converted = []
+        skipped_queries = []  # List for skipped queries (for reporting purposes)
         for query in legacy_queries.get("queries", []):  # Iterate over "queries" list in Legacy JSON object
 
             query_name = query.get("name", "").strip()  # Get the 'name', or use an empty string as the default
             query_list = query.get("queryList", [{}])  # Retrieve the query list
             query_data = None  # Initialize empty query data
+            
+            # Check if the queryList contains multiple queries
+            if len(query_list) > 1:
+                warning_message = f"Query '{query_name or 'Unnamed query'}' skipped: queryList contains multiple queries."
+                print(f"{yellow}{warning_message}{reset}")
+                skipped_queries.append(warning_message)
+                continue
             
             # Process each query in the `queryList`
             for query_obj in query_list:
@@ -130,7 +139,9 @@ def convert_legacy_queries(legacy_queries):
 
             # Skip invalid or empty queries
             if not query_data:
-                print(f"{yellow}Query '{query_name or 'Unnamed query'}' skipped since its 'query' field was null or empty.{reset}")
+                warning_message = f"Query '{query_name or 'Unnamed query'}' skipped: its 'query' field was null or empty."
+                print(f"{yellow}{warning_message}{reset}")
+                skipped_queries.append(warning_message)
                 continue
 
             if not query_name:
@@ -149,6 +160,15 @@ def convert_legacy_queries(legacy_queries):
             # Add the converted query to the list
             converted.append(converted_query)
 
+        # Write skipped queries to a file
+        if skipped_queries:
+            with open(skipped_queries_filename, "w") as skipped_file:
+            # Prepend header with filename and date
+                header = f"Date: {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                skipped_file.write(header)
+                skipped_file.write("\n".join(skipped_queries))
+
+                
         return converted
     except KeyError as e:
         # Handles any missing keys in the input JSON
@@ -173,7 +193,7 @@ def save_converted_queries(queries, output_file):
         print(f"{red}Error details: {e}{reset}")
 
 
-def upload_query(api_url, jwt_token, query, count):
+def upload_query(api_url, jwt_token, query, count, failed_queries):
     """
     Upload a single query to the specified API endpoint.
 
@@ -182,6 +202,7 @@ def upload_query(api_url, jwt_token, query, count):
         jwt_token (str): JWT token for authentication.
         query (dict): The query object to be uploaded.
         count (int): The query count in the current batch.
+        failed_queries (list): List to store details of failed queries.
 
     Returns:
         bool: True if the query was uploaded successfully, False otherwise.
@@ -196,15 +217,26 @@ def upload_query(api_url, jwt_token, query, count):
             json=query
         )
 
+        # Check for successful responses
         if response.status_code == 200 or response.status_code == 201:
             print(f"{light_green}{count}. Query uploaded successfully: {query.get('name', 'Unnamed query')}{reset}\n")
             return True
         else:
-            print(f"\n{red}{count}. Failed to upload query: {query.get('name', 'Unnamed query')}{reset}")
-            print(f"{red}HTTP {response.status_code} - {response.text}{reset}\n")
+            # Handle errors: store name and reason
+            error_reason = f"HTTP {response.status_code} - {response.text}"
+            failed_queries.append(
+                f"Query Name: {query.get('name', 'Unnamed query')} - Reason: {error_reason}"
+            )
+            print(f"{red}{count}. Failed to upload query: {query.get('name', 'Unnamed query')}{reset}")
+            print(f"{red}{error_reason}{reset}\n")
             return False
+
     except Exception as e:
-        print(f"\n{red}{count}. An error occurred while uploading query: {query.get('name', 'Unnamed query')}{reset}")
+        # Catch general exceptions and log them
+        failed_queries.append(
+            f"Query Name: {query.get('name', 'Unnamed query')} - Reason: {str(e)}"
+        )
+        print(f"{red}{count}. An error occurred while uploading query: {query.get('name', 'Unnamed query')}{reset}")
         print(f"{red}Error: {e}{reset}\n")
         return False
 
@@ -218,12 +250,20 @@ def upload_queries(api_url, jwt_token, queries):
         jwt_token (str): JWT token for authentication.
         queries (list): List of query objects to be uploaded.
     """
+    failed_queries = []  # List to collect details of all failed queries
     for count, query in enumerate(queries, start=1):
         # Upload each query and apply rate limiting
-        success = upload_query(api_url, jwt_token, query, count)
+        upload_query(api_url, jwt_token, query, count, failed_queries)
+        time.sleep(DELAY_BETWEEN_REQUESTS)  # Enforce delay between requests to avoid rate-limiting issues
 
-        # Enforce rate limiting through delay between each request
-        time.sleep(DELAY_BETWEEN_REQUESTS)
+    # Log all failed queries to a file at the end
+    failed_uploads_filename = "failed_uploads.txt"
+    if failed_queries:
+        with open(failed_uploads_filename, "w") as failed_file:
+            header = f"Date: {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            failed_file.write(header)
+            failed_file.write("\n".join(failed_queries))
+        print(f"\n{yellow}Created file with list of all failed uploads: {failed_uploads_filename}{reset}")
 
 
 def main():
@@ -270,6 +310,7 @@ def main():
     # If the --convert-only flag is provided, save converted queries to the specified output file
     if convert_only:
         save_converted_queries(converted_queries, output_file)
+        print(f"\n{yellow}Created file with list of all skipped queries: {skipped_queries_filename}{reset}")
         return
 
     # Step 4: Upload converted queries with rate limiting
@@ -280,6 +321,7 @@ def main():
     print(f"{cyan}Starting to upload {len(converted_queries)} queries to the API...{reset}\n")
     upload_queries(api_url, jwt_token, converted_queries)
     print(f"{light_blue}All queries uploaded.{reset}")
+    print(f"\n{yellow} If any queries were skipped, they are stored at: {skipped_queries_filename}{reset}")
 
 
 if __name__ == "__main__":
