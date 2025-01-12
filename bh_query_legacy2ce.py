@@ -1,3 +1,4 @@
+import re
 import json
 import requests
 import time
@@ -88,6 +89,22 @@ def load_query(input_file):
         return
 
 
+def process_query_with_props(query_obj):
+    """
+    Processes the queryList object, replacing variables in the query
+    with values from the `props` key if it exists.
+    """
+    if "props" in query_obj:
+        for var_name, var_value in query_obj["props"].items():
+            # Construct variable pattern with $ (e.g., $sid)
+            variable_pattern = re.escape(f"${var_name}")
+            # Replace $<variable> in the query with the value wrapped in quotes
+            replacement_value = f'"{var_value}"'
+            # Replace matches in the query
+            query_obj["query"] = re.sub(variable_pattern, replacement_value, query_obj["query"])
+    return query_obj
+
+
 def convert_legacy_queries(legacy_queries):
     """
     Convert queries from the Legacy BloodHound format to the BloodHound CE format.
@@ -103,7 +120,13 @@ def convert_legacy_queries(legacy_queries):
         for query in legacy_queries.get("queries", []):  # Iterate over "queries" list in Legacy JSON object
 
             query_name = query.get("name", "").strip()  # Get the 'name', or use an empty string as the default
-            query_data = query.get("queryList", [{}])[0].get("query")  # Safely retrieve the query data
+            query_list = query.get("queryList", [{}])  # Retrieve the query list
+            query_data = None  # Initialize empty query data
+            
+            # Process each query in the `queryList`
+            for query_obj in query_list:
+                processed_obj = process_query_with_props(query_obj)  # Replace variables using props
+                query_data = processed_obj.get("query")  # Extract the final query
 
             # Skip invalid or empty queries
             if not query_data:
