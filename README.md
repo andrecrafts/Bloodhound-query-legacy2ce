@@ -49,7 +49,7 @@ Download the python script here:
 
 1.  [Convert and Upload Custom Queries](#convert-and-upload-custom-queries)
 2.  [Convert Only (Save to File Without Uploading)](#convert-only-save-to-file-without-uploading)
-3.  [Upload Already Converted Custom Queries](#)
+3.  [Upload Already Converted Custom Queries](#upload-already-converted-custom-queries)
 4.  [Upload to a Different BloodHound CE API URL](#upload-to-a-different-bloodhound-ce-api-url)
 
 #### Convert and Upload Custom Queries
