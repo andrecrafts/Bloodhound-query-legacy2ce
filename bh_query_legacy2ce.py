@@ -2,12 +2,14 @@ import json
 import requests
 import time
 import argparse
+import uuid
 
 # Define colors using ANSI escape codes
 red = "\033[31m"
 light_blue = "\033[0;34m"
 light_green = "\033[32m"
 cyan = "\033[36m"
+yellow = "\033[33m"
 reset = "\033[0m"  # Reset color
 
 # Constants
@@ -20,7 +22,7 @@ def parse_arguments():
     Parse command-line arguments for the script.
 
     Returns:
-        argparse.Namespace: Parsed arguments (input file, --convert-only flag, --output-file, JWT token, API URL).
+        argparse.Namespace: Parsed arguments (input file, --convert-only flag, --upload-only flag, --output-file, JWT token, API URL).
     """
     usage_example = """
 \nUsage:
@@ -29,18 +31,26 @@ def parse_arguments():
 
     # Convert Custom Queries and Save in an Output File for Later Use
     python upload_bloodhound_queries.py --input-file bloodhound_legacy_customqueries.json --convert-only --output-file "new_format_custom_queries.json"
+
+    # Upload Pre-Converted Custom Queries
+    python upload_bloodhound_queries.py --upload-only --input-file converted_custom_queries.json --jwt-token "eyJ0..."
 """
     
     parser = argparse.ArgumentParser(
-        description="A tool to convert custom queries from Legacy BloodHound to BloodHound CE format, with the option to directly upload them to the API or save them to a file for later use.",
+        description="A tool to convert custom queries from Legacy BloodHound to BloodHound CE format, with the option to directly upload them to the API or save them to a file for later use. You can also upload pre-converted queries.",
         formatter_class=argparse.RawTextHelpFormatter,
         epilog=(usage_example)
     )
-    parser.add_argument("--input-file", required=True, help="Path to the input JSON file containing custom queries.")
+    parser.add_argument("--input-file", required=True, help="Path to the input JSON file containing custom queries or converted queries.")
     parser.add_argument(
         "--convert-only",
         action="store_true",
         help="If specified, the script only performs conversion of queries without uploading to the API."
+    )
+    parser.add_argument(
+        "--upload-only",
+        action="store_true",
+        help="If specified, the script uploads pre-converted queries without performing conversion."
     )
     parser.add_argument(
         "--output-file",
@@ -64,12 +74,12 @@ def load_query(input_file):
         input_file (str): Path to the input file.
 
     Returns:
-        dict: The JSON object loaded from the file if successful, None otherwise.
+        dict or list: The JSON object or list loaded from the file if successful, None otherwise.
     """
     try:
         with open(input_file, "r") as file:
-            legacy_queries = json.load(file)  # Load the JSON data from the file
-        return legacy_queries
+            data = json.load(file)  # Load the JSON data from the file
+        return data
     except FileNotFoundError:
         print(f"{red}Error: The file '{input_file}' was not found. Please check the file path.{reset}")
         return
@@ -89,14 +99,33 @@ def convert_legacy_queries(legacy_queries):
         list: A list of converted queries ready for upload in BloodHound CE format.
     """
     try:
-        converted = [
-            {
-                "name": query["name"],  # Query name
-                "category": query["category"],  # Query category
-                "query": query["queryList"][0]["query"]  # Cypher query (first query in queryList)
+        converted = []
+        for query in legacy_queries.get("queries", []):  # Iterate over "queries" list in Legacy JSON object
+
+            query_name = query.get("name", "").strip()  # Get the 'name', or use an empty string as the default
+            query_data = query.get("queryList", [{}])[0].get("query")  # Safely retrieve the query data
+
+            # Skip invalid or empty queries
+            if not query_data:
+                print(f"{yellow}Query '{query_name or 'Unnamed query'}' skipped since its 'query' field was null or empty.{reset}")
+                continue
+
+            if not query_name:
+                unique_id = uuid.uuid4()  # Generate a unique identifier
+                query_name = f"Unnamed query {unique_id}"
+                print(f"{cyan}Query with empty name, new name assigned: {query_name}{reset}")
+            # Extract required fields
+            converted_query = {
+                "name": query_name,  # Query name
+                "query": query_data  # Cypher query
             }
-            for query in legacy_queries.get("queries", [])  # Iterate over "queries" list in Legacy JSON object
-        ]
+
+            # Add category if it exists, otherwise set to None (or omit this key entirely, if desired)
+            converted_query["category"] = query.get("category", None)
+
+            # Add the converted query to the list
+            converted.append(converted_query)
+
         return converted
     except KeyError as e:
         # Handles any missing keys in the input JSON
@@ -178,34 +207,46 @@ def main():
     """
     Main function to manage the following:
     - Parse command-line arguments
-    - Load legacy queries from the input file
-    - Optionally convert the queries to a specific output file
-    - Upload the converted queries while respecting the API rate limit
+    - Load queries (legacy or pre-converted)
+    - Optionally convert the queries
+    - Upload the queries if specified
     """
     # Step 1: Parse command-line arguments
     args = parse_arguments()
     input_file = args.input_file
     convert_only = args.convert_only
+    upload_only = args.upload_only
     output_file = args.output_file
     jwt_token = args.jwt_token
     api_url = args.api_url
 
-    # Step 2: Load queries from the input file in Legacy BloodHound format
-    legacy_queries = load_query(input_file)
-    if not legacy_queries:
+    # Step 2: Load queries from the input file
+    queries = load_query(input_file)
+    if not queries:
         return  # Exit if queries couldn't be loaded
+
+    # If --upload-only is specified, directly upload pre-converted queries
+    if upload_only:
+        if not jwt_token:
+            print(f"{red}Error: JWT token is required for uploading queries in --upload-only mode.{reset}")
+            return
+
+        print(f"{cyan}Starting to upload pre-converted queries to the API...{reset}\n")
+        upload_queries(api_url, jwt_token, queries)
+        print(f"{light_blue}All queries uploaded.{reset}")
+        return
 
     # Step 3: Convert legacy queries to BloodHound CE format
     print(f"{cyan}Converting queries from Legacy BloodHound format to BloodHound CE format...{reset}")
-    queries = convert_legacy_queries(legacy_queries)
+    converted_queries = convert_legacy_queries(queries)
 
-    if not queries:
+    if not converted_queries:
         print(f"{red}Error: No queries found after conversion or conversion failed. Please check the input file format.{reset}")
         return
 
-    # If the --convert-only flag is provided, save the queries to the specified output file
+    # If the --convert-only flag is provided, save converted queries to the specified output file
     if convert_only:
-        save_converted_queries(queries, output_file)
+        save_converted_queries(converted_queries, output_file)
         return
 
     # Step 4: Upload converted queries with rate limiting
@@ -213,9 +254,8 @@ def main():
         print(f"{red}Error: JWT token is required for uploading queries. Use --convert-only to skip uploading.{reset}")
         return
 
-    print(f"{cyan}Starting to upload {len(queries)} queries to the API...{reset}\n")
-    upload_queries(api_url, jwt_token, queries)
-
+    print(f"{cyan}Starting to upload {len(converted_queries)} queries to the API...{reset}\n")
+    upload_queries(api_url, jwt_token, converted_queries)
     print(f"{light_blue}All queries uploaded.{reset}")
 
 
