@@ -15,7 +15,7 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 - Missing query `name` is assigned a unique name in the format: `Unnamed query <uuid>`.
 - Queries with missing or empty query values are skipped with a message indicating why.
 - Fetches variables in `props` field, and replaces them in the query to be compatible with BloodHound CE.
-- Skips Queries with more than 1 query value.
+- Skips Queries with more than 1 query value to avoid errors.
 - Logs failed uploads in failed_uploads.txt and skipped queries in skipped_queries.txt.
 
 ### Quick Demo
