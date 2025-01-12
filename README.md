@@ -15,13 +15,12 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 ![bh_upload_queries](https://github.com/user-attachments/assets/a6d6bce1-749d-4d72-bade-a5b10bf2b0b7)
 
 ### Table of Contents
-1.  [Quick Demo](#quick-demo)
-2.  [Usage](#usage)
-3.  [Getting the JWT Token from BloodHound CE](#getting-the-jwt-token-from-bloodhound-ce)
-4.  [Old vs New Query Format](#old-vs-new-query-format)
-5.  [Support & Contribution](#support--contribution)
-6.  [Credits](#credits)
-7.  [License](#license)
+1.  [Usage](#usage)
+2.  [Getting the JWT Token from BloodHound CE](#getting-the-jwt-token-from-bloodhound-ce)
+3.  [Old vs New Query Format](#old-vs-new-query-format)
+4.  [Support & Contribution](#support--contribution)
+5.  [Credits](#credits)
+6.  [License](#license)
 
 **Update 12/01/2025 - Improved Script Features:**
 - Missing `category` is set to `null` automatically instead of causing an error.
