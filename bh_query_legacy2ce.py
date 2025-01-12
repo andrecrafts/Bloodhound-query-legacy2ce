@@ -32,7 +32,7 @@ def parse_arguments():
     # Convert Custom Queries and Save in an Output File for Later Use
     python upload_bloodhound_queries.py --input-file bloodhound_legacy_customqueries.json --convert-only --output-file "new_format_custom_queries.json"
 
-    # Upload Pre-Converted Custom Queries
+    # Upload Already Converted Custom Queries
     python upload_bloodhound_queries.py --upload-only --input-file converted_custom_queries.json --jwt-token "eyJ0..."
 """
     
