@@ -10,6 +10,10 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 - Support for rate-limited uploading to prevent API blocking.
 - Detailed error handling and progress reporting during query uploads.
 
+### Quick Demo
+
+![bh_upload_queries](https://github.com/user-attachments/assets/a6d6bce1-749d-4d72-bade-a5b10bf2b0b7)
+
 ### Table of Contents
 1.  [Quick Demo](#quick-demo)
 2.  [Usage](#usage)
@@ -18,10 +22,6 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 5.  [Support & Contribution](#support--contribution)
 6.  [Credits](#credits)
 7.  [License](#license)
-
-### Quick Demo
-
-![bh_upload_queries](https://github.com/user-attachments/assets/a6d6bce1-749d-4d72-bade-a5b10bf2b0b7)
 
 **Update 12/01/2025 - Improved Script Features:**
 - Missing `category` is set to `null` automatically instead of causing an error.
