@@ -10,6 +10,14 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 - Support for rate-limited uploading to prevent API blocking.
 - Detailed error handling and progress reporting during query uploads.
 
+**Update 12/01/2025 - Improved Script Features:**
+- Missing `category` is set to `null` automatically instead of causing an error.
+- Missing query `name` is assigned a unique name in the format: `Unnamed query <uuid>`.
+- Queries with missing or empty query values are skipped with a message indicating why.
+- Fetches variables in `props` field, and replaces them in the query to be compatible with BloodHound CE.
+- Skips Queries with more than 1 query value.
+- Logs failed uploads in failed_uploads.txt and skipped queries in skipped_queries.txt.
+
 ### Quick Demo
 
 ![bh_upload_queries](https://github.com/user-attachments/assets/a6d6bce1-749d-4d72-bade-a5b10bf2b0b7)
@@ -21,12 +29,6 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 4.  [Support & Contribution](#support--contribution)
 5.  [Credits](#credits)
 6.  [License](#license)
-
-**Update 12/01/2025 - Improved Script Features:**
-- Missing `category` is set to `null` automatically instead of causing an error.
-- Missing query `name` is assigned a unique name in the format: `Unnamed query <uuid>`.
-- Queries with missing or empty query values are skipped with a message indicating why.
-- Fetches variables in `props` field, and replaces them in the query to be compatible with BloodHound CE.
 
 ## Usage
 
