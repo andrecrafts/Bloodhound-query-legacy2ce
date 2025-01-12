@@ -49,7 +49,8 @@ Download the python script here:
 
 1.  [Convert and Upload Custom Queries](#convert-and-upload-custom-queries)
 2.  [Convert Only (Save to File Without Uploading)](#convert-only-save-to-file-without-uploading)
-3.  [Upload to a Different BloodHound CE API URL](#upload-to-a-different-bloodhound-ce-api-url)
+3.  [Upload Already Converted Custom Queries](#)
+4.  [Upload to a Different BloodHound CE API URL](#upload-to-a-different-bloodhound-ce-api-url)
 
 #### Convert and Upload Custom Queries
 
@@ -66,7 +67,13 @@ This command converts custom queries without uploading them. The output is saved
 ```bash
 python upload_bloodhound_queries.py --input-file bloodhound_legacy_customqueries.json --convert-only --output-file newformat_customqueries.json
 ```
+#### Upload Already Converted Custom Queries
 
+If you already have custom queries in the new BloodHound CE format and only need to upload them, use the `--upload-only` flag. This skips the conversion step:
+
+```bash
+python upload_bloodhound_queries.py --upload-only --input-file converted_custom_queries.json --jwt-token YOUR_JWT_TOKEN
+```
 #### Upload to a Different BloodHound CE API URL
 
 By default, the tool uses `http://localhost:8080/api/v2/saved-queries` as the API endpoint. If your BloodHound CE instance runs on a different port or URL, use the `--api-url` flag to customize:
