@@ -10,6 +10,11 @@ This tool simplifies the process of migrating/converting your Cypher queries fro
 - Support for rate-limited uploading to prevent API blocking.
 - Detailed error handling and progress reporting during query uploads.
 
+**Update 12/01/2025 - Improved Script Features:**
+- Missing `category` is set to `null` automatically instead of causing an error.
+- Missing query `name` is assigned a unique name in the format: `Unnamed query <uuid>`.
+- Queries with missing or empty query values are skipped with a message indicating why.
+
 ### Quick Demo
 
 ![bh_upload_queries](https://github.com/user-attachments/assets/a6d6bce1-749d-4d72-bade-a5b10bf2b0b7)
