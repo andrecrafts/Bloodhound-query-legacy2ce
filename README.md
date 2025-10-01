@@ -44,7 +44,7 @@ pip install requests argparse
 ```
 
 Download the python script here:
-- [bh_query_legacy2ce.py](https://github.com/WafflesExploits/Bloodhound-query-legacy2ce/blob/main/bh_query_legacy2ce.py)
+- [bh_query_legacy2ce.py](https://github.com/andrecrafts/Bloodhound-query-legacy2ce/blob/main/bh_query_legacy2ce.py)
 
 ### 2\. Usage Examples
 
@@ -148,8 +148,8 @@ You can also support me on buy me a ko-fi to fuel more awesome content:
 - [Make Bloodhound Cool Again: Migrating Custom Queries from Legacy BloodHound to BloodHound CE](https://medium.com/seercurity-spotlight/make-bloodhound-cool-again-migrating-custom-queries-from-legacy-bloodhound-to-bloodhound-ce-83cffcfe5b64)
     - His bash scripts helped me getting started!
 
-Tool developed with ❤️ by **WafflesExploits**.
+Tool developed with ❤️ by [AndreCrafts](https://andrecrafts.com/about).
 
 ## License
 
-This project is under the [Apache License 2.0](https://github.com/WafflesExploits/Bloodhound-query-legacy2ce/blob/main/LICENSE).
+This project is under the [Apache License 2.0](https://github.com/andrecrafts/Bloodhound-query-legacy2ce/blob/main/LICENSE).
